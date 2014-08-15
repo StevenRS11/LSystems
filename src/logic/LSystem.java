@@ -16,7 +16,9 @@ public class LSystem
 	 */
 	public static void main(String[] args)
 	{
-		String[] test = { "X>F-[[X]+X]+F[+FX]-X:F>FF", "4", "X" };
+		String[] test = { "X>X+YF:Y>FX-Y", "10", "FX" };
+		
+		//test = { "X>F-[[X]+X]+F[+FX]-X:F>FF", "4", "X" };
 		if(args.length == 0)
 		{
 			args = test;
