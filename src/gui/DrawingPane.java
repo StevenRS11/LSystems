@@ -49,14 +49,14 @@ public class DrawingPane extends JFrame implements ActionListener
 
 		public void doUpdate(String system, Graphics2D g)
 		{
-			int growthAngle = 90;
+			int angle  = 90;
 			g.setStroke(new BasicStroke(2));
 			ArrayDeque<double[]> state = new ArrayDeque<double[]>();
 			double[] currentState = { 90, this.getSize().width / 2, (int) (this.getSize().height * .6) };
 
 			for (Character ch : system.toCharArray())
 			{
-				double motion = 10;
+				double motion = 15;
 				double[] jitter = this.getRandomWalk();
 
 				if (ch == 'F')
@@ -90,12 +90,12 @@ public class DrawingPane extends JFrame implements ActionListener
 				}
 				if (ch == '-')
 				{
-					currentState = new double[] { (double) ((currentState[0] - growthAngle+1 * jitter[1]) % 360), currentState[1], currentState[2] };
+					currentState = new double[] { (double) ((currentState[0] - angle * jitter[1]) % 360), currentState[1], currentState[2] };
 
 				}
 				if (ch == '+')
 				{
-					currentState[0] = ((currentState[0] + growthAngle +1 * jitter[0]) % 360);
+					currentState[0] = ((currentState[0] + angle * jitter[0]) % 360);
 
 				}
 				if (ch == ']')
@@ -112,10 +112,10 @@ public class DrawingPane extends JFrame implements ActionListener
 
 		public double[] getRandomWalk()
 		{
-			float time = (float) (((System.currentTimeMillis() + 0xF1234568) % 200000 + rand.nextGaussian()) / (2000.0F));
+			float time = (float) (((System.currentTimeMillis() + 0xF1234568) % 200000 + rand.nextGaussian()) / (500.0F));
 			double xJitter = Math.cos(1.1f * time) * Math.cos(0.8f * time);
 			double yJitter = Math.sin(1.2f * time) * Math.cos(0.9f * time);
-			return new double[] { xJitter, yJitter };
+			return new double[] { 1, 1 };
 		}
 	}
 
