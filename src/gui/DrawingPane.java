@@ -1,15 +1,19 @@
 package gui;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,10 +21,10 @@ import javax.swing.Timer;
 
 public class DrawingPane extends JFrame implements ActionListener
 {
-	public DrawingPane(String system)
+	public DrawingPane(ArrayList<Point> points)
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.add(new DrawingPanel(system));
+		this.add(new DrawingPanel(points));
 		this.pack();
 		this.setVisible(true);
 		new Timer(5, this).start();
@@ -29,17 +33,17 @@ public class DrawingPane extends JFrame implements ActionListener
 	class DrawingPanel extends JPanel
 	{
 		Random rand = new Random(System.nanoTime());
-		String system;
+		ArrayList<Point> points;
 
-		DrawingPanel(String system)
+		DrawingPanel(ArrayList<Point> points)
 		{
-			this.system = system;
+			this.points = points;
 		}
 
 		protected void paintComponent(Graphics g)
 		{
 			super.paintComponent(g);
-			doUpdate(system, (Graphics2D) g);
+			doUpdate(points, (Graphics2D) g);
 		}
 
 		public Dimension getPreferredSize()
@@ -47,62 +51,19 @@ public class DrawingPane extends JFrame implements ActionListener
 			return new Dimension(800, 600);
 		}
 
-		public void doUpdate(String system, Graphics2D g)
+		public void doUpdate(ArrayList<Point> points, Graphics2D g)
 		{
-			int angle  = 90;
 			g.setStroke(new BasicStroke(2));
-			ArrayDeque<double[]> state = new ArrayDeque<double[]>();
-			double[] currentState = { 90, this.getSize().width / 2, (int) (this.getSize().height * .6) };
-
-			for (Character ch : system.toCharArray())
+			double[] startPos = {this.getSize().width / 2, (int) (this.getSize().height * .6) };
+			int multifactor = 10;
+		
+			for(int i = 0; i+1< points.size();i++)
 			{
-				double motion = 15;
-				double[] jitter = this.getRandomWalk();
 
-				if (ch == 'F')
-				{
-					double motionX = (Math.cos(Math.toRadians(currentState[0])) * motion);
-					double motionY = (Math.sin(Math.toRadians(currentState[0])) * motion);
-
-					drawLine(currentState[1], currentState[2], currentState[1] - motionX, currentState[2] - motionY, g);
-
-					currentState[1] -= motionX;
-					currentState[2] -= motionY;
-
-				}
-				if (ch == 'X')
-				{
-					/**
-
-					double motionX = (Math.cos(Math.toRadians(currentState[0])) * motion);
-					double motionY = (Math.sin(Math.toRadians(currentState[0])) * motion);
-
-					drawLine(currentState[1], currentState[2], currentState[1] - motionX, currentState[2] - motionY, g);
-
-					currentState[1] -= motionX;
-					currentState[2] -= motionY;
-					**/
-				}
-				if (ch == '[')
-				{
-
-					state.push(currentState.clone());
-				}
-				if (ch == '-')
-				{
-					currentState = new double[] { (double) ((currentState[0] - angle * jitter[1]) % 360), currentState[1], currentState[2] };
-
-				}
-				if (ch == '+')
-				{
-					currentState[0] = ((currentState[0] + angle * jitter[0]) % 360);
-
-				}
-				if (ch == ']')
-				{
-					currentState = state.pop();
-				}
+				drawLine(points.get(i).x*multifactor+startPos[0], points.get(i).y*multifactor+startPos[1],points.get(i).x*multifactor+startPos[0], points.get(i).y*multifactor+startPos[1],g);
 			}
+
+			
 		}
 		
 		public void drawOutline()
