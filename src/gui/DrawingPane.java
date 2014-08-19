@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -14,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +23,7 @@ import javax.swing.Timer;
 
 public class DrawingPane extends JFrame implements ActionListener
 {
-	public DrawingPane(ArrayList<Point> points)
+	public DrawingPane(Iterable<Point> points)
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.add(new DrawingPanel(points));
@@ -33,11 +35,11 @@ public class DrawingPane extends JFrame implements ActionListener
 	class DrawingPanel extends JPanel
 	{
 		Random rand = new Random(System.nanoTime());
-		ArrayList<Point> points;
+		Iterable<Point> points;
 
-		DrawingPanel(ArrayList<Point> points)
+		DrawingPanel(Iterable<Point> points2)
 		{
-			this.points = points;
+			this.points = points2;
 		}
 
 		protected void paintComponent(Graphics g)
@@ -51,16 +53,32 @@ public class DrawingPane extends JFrame implements ActionListener
 			return new Dimension(800, 600);
 		}
 
-		public void doUpdate(ArrayList<Point> points, Graphics2D g)
+		public void doUpdate(Iterable<Point> points2, Graphics2D g)
 		{
 			g.setStroke(new BasicStroke(2));
-			double[] startPos = {this.getSize().width / 2, (int) (this.getSize().height * .6) };
-			int multifactor = 10;
+			double[] startPos = {this.getSize().width / 20, (int) (this.getSize().height * .5) };
+			int multifactor = 6;
 		
-			for(int i = 0; i+1< points.size();i++)
+			Iterator<Point> itr = points2.iterator();
+			while(itr.hasNext())
 			{
+				Point p1 = itr.next();
+				
+				if(!itr.hasNext())
+				{
+					break;
+				}
+				Point p2 = itr.next();
+				if(!itr.hasNext())
+				{
+					break;
+				}
+				Point p3 = itr.next();
 
-				drawLine(points.get(i).x*multifactor+startPos[0], points.get(i).y*multifactor+startPos[1],points.get(i).x*multifactor+startPos[0], points.get(i).y*multifactor+startPos[1],g);
+				
+				g.drawPolygon(new int[]{(int) (p1.x*multifactor+startPos[0]),(int) (p2.x*multifactor+startPos[0]),(int) (p3.x*multifactor+startPos[0])}, new int[]{(int) (p1.y*multifactor+startPos[1]),(int) (p2.y*multifactor+startPos[1]),(int) (p3.y*multifactor+startPos[1])}, 3);
+				//drawLine(previous.x*multifactor+startPos[0],previous.y*multifactor+startPos[1],current.x*multifactor+startPos[0],current.y*multifactor+startPos[1],g);
+				//previous = current;
 			}
 
 			
